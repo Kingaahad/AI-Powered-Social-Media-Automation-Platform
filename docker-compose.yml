@@ -1,0 +1,79 @@
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/zirora_pulse"
+
+# JWT
+JWT_SECRET=your-secret-key
+
+# OpenAI
+OPENAI_API_KEY=your-openai-api-key
+
+# Social Media API Keys (Examples - add others as needed)
+TWITTER_API_KEY=your-twitter-api-key
+TWITTER_API_SECRET=your-twitter-api-secret
+TWITTER_ACCESS_TOKEN=your-twitter-access-token
+TWITTER_ACCESS_SECRET=your-twitter-access-secret
+
+FACEBOOK_APP_ID=your-facebook-app-id
+FACEBOOK_APP_SECRET=your-facebook-app-secret
+
+INSTAGRAM_APP_ID=your-instagram-app-id
+INSTAGRAM_APP_SECRET=your-instagram-app-secret
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# Logging
+LOG_LEVEL=info
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: zirora
+      POSTGRES_PASSWORD: zirora123
+      POSTGRES_DB: zirora_pulse
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zirora"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: zirora
+      RABBITMQ_DEFAULT_PASS: zirora123
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data: 
